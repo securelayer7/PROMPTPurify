@@ -1,0 +1,66 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+coverage/
+*.tgz
+.vitest/
+.env
+.env.*
+# EVAL-ONLY adversarial benchmark: github.com/elder-plinius (Pliny/BASI) raw
+# jailbreak + system-prompt-leak payloads. AGPL-3.0 / unlicensed — NOT
+# permissively licensed, so NEVER trained, NEVER shipped, NEVER redistributed.
+# Pulled locally only for measuring detector recall (training/eval_plinius.mjs).
+# Reproducible from training/fetch_plinius_eval.py. Only the survey table,
+# license inventory, harness + PLINIUS_BENCH.md are committed — never the raw.
+training/.eval_cache/
+# OOD eval raw datasets — third-party, not redistributed (size/licensing)
+training/.ood_cache/
+# V3 real-data retrain raw pool + held-out benchmark — third-party, not
+# redistributed (size/licensing). Splits derived deterministically downstream.
+training/.real_cache/
+# Versioned per-experiment train.jsonl dirs (V32/V33/V34/V35 derived data)
+training/.real_cache_v*/
+training/.real_cache_th/
+# Versioned model artifact export dirs (l5e_v33, l5e_v35 — large ONNX)
+models/l5e_v*/
+# ONNX export temp blobs / shape-inference scratch
+*.data
+sym_shape_infer_temp.onnx
+# fp32 distill intermediate (export_onnx.py strips it; never committed)
+models/l5b/_student_fp32/
+# STAGE-5 strictly-from-scratch L5c artifact: opt-in, npm-excluded
+# (files:["dist"]), large ONNX — gitignored from the shipped path exactly
+# like models/l5b. Reproducible from training/train_scratch.py (seed 1337).
+models/l5c/
+# STAGE-7 "intelligent" L5d artifact (fine-tuned Apache-2.0 distil-mBERT):
+# opt-in, npm-excluded (files:["dist"]), large INT8 ONNX — gitignored from
+# the shipped path exactly like models/l5b, l5c. Reproducible from
+# training/train_intelligent.py + export_intelligent.py (seed 1337).
+models/l5d/
+# STAGE-8 OUR-OWN pretrained backbone: sampled open pretrain corpus
+# (permissive third-party, not redistributed — size/licensing) + the
+# resulting L5e artifact (opt-in, npm-excluded, large INT8 ONNX). Both
+# gitignored from the shipped path exactly like .real_cache / models/l5d.
+# Reproducible from training/pretrain.py + train_intelligent.py
+# + export_intelligent.py (seed 1337).
+training/.pretrain_cache/
+# models/l5e/ — public release shipped: model.int8.onnx, vocab.txt,
+# l5e.json, SHA256SUMS. Ignore everything else under it (training
+# intermediates: _corpus/, _pretrained/, _hf_fp32_*, *.bak, etc).
+models/l5e/*
+!models/l5e/model.int8.onnx
+!models/l5e/vocab.txt
+!models/l5e/l5e.json
+!models/l5e/SHA256SUMS
+# isolated offline training venv (stable pinned CPU stack; never shipped)
+training/.venv/
+# python bytecode cache (training scripts; never shipped)
+training/__pycache__/
+**/__pycache__/
+
+# Session-local — claude state, screenshots, big intermediates
+.claude/
+.tmp/
+training/.real_cache_th/
+examples/sample-app/public/hero.png

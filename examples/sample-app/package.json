@@ -1,0 +1,15 @@
+{
+  "name": "promptpurify-sample-app",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Minimal promptpurify-guarded /chat endpoint example.",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "onnxruntime-node": "^1.19.0",
+    "promptpurify": "^0.0.1"
+  }
+}

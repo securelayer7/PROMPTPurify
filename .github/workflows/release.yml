@@ -1,0 +1,120 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v0.0.1)'
+        required: true
+
+permissions:
+  contents: write      # GitHub Release upload
+  id-token: write      # cosign keyless + npm provenance + SLSA attestation
+  attestations: write  # SLSA build provenance
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      # ---------- Model artifact tarball ----------
+      - name: Build model tarball
+        run: |
+          tar -czf promptpurify-model.tar.gz \
+            models/l5e/model.int8.onnx \
+            models/l5e/vocab.txt \
+            models/l5e/l5e.json \
+            models/l5e/SHA256SUMS
+          sha256sum promptpurify-model.tar.gz > promptpurify-model.tar.gz.sha256
+
+      - name: Verify model SHA256SUMS
+        run: cd models/l5e && sha256sum -c SHA256SUMS
+
+      # ---------- cosign keyless signature ----------
+      - uses: sigstore/cosign-installer@v3
+
+      - name: cosign-sign model tarball
+        run: |
+          cosign sign-blob --yes \
+            --bundle promptpurify-model.tar.gz.cosign.bundle \
+            promptpurify-model.tar.gz
+
+      # ---------- SLSA build provenance ----------
+      - uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: |
+            promptpurify-model.tar.gz
+            dist/**/*
+
+      # ---------- SBOM ----------
+      - name: Generate CycloneDX SBOM
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-file SBOM.cdx.json --output-format JSON
+
+      # ---------- GitHub Release ----------
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            promptpurify-model.tar.gz
+            promptpurify-model.tar.gz.sha256
+            promptpurify-model.tar.gz.cosign.bundle
+            SBOM.cdx.json
+          generate_release_notes: true
+
+      # ---------- npm publish with provenance (optional — needs NPM_TOKEN) ----------
+      - name: Publish to npm with provenance
+        continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NPM_TOKEN not set — skipping npm publish."
+            exit 0
+          fi
+          npm publish --provenance --access public
+
+      # ---------- Hugging Face Hub mirror (optional — needs HF_TOKEN) ----------
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Push to Securelayer7/promptpurify on HF Hub
+        continue-on-error: true
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "HF_TOKEN not set — skipping HF Hub mirror."
+            exit 0
+          fi
+          pip install --quiet huggingface_hub
+          python - <<'PY'
+          import os, shutil
+          from huggingface_hub import HfApi
+          repo = "Securelayer7/promptpurify"
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          api.create_repo(repo, repo_type="model", exist_ok=True)
+          # MODEL_CARD.md becomes the HF README (has the YAML frontmatter HF needs)
+          shutil.copy("MODEL_CARD.md", "models/l5e/README.md")
+          api.upload_folder(
+              repo_id=repo,
+              folder_path="models/l5e",
+              path_in_repo=".",
+              commit_message=f"release {os.environ.get('GITHUB_REF_NAME', 'manual')}",
+              allow_patterns=["model.int8.onnx", "vocab.txt", "l5e.json", "SHA256SUMS", "README.md"],
+          )
+          PY
