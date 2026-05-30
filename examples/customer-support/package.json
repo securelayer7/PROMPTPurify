@@ -1,0 +1,15 @@
+{
+  "name": "promptpurify-example-customer-support",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Example: a fintech customer-support chatbot protected by promptpurify",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "promptpurify": "file:../../",
+    "express": "^4.19.2",
+    "groq-sdk": "^0.7.0"
+  }
+}

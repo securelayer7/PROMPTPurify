@@ -1,0 +1,33 @@
+{
+  "version": "v13-struq+supcon+distill",
+  "max_len": 128,
+  "do_lower_case": false,
+  "cls_id": 2,
+  "sep_id": 3,
+  "pad_id": 0,
+  "unk_id": 1,
+  "unk_token": "[UNK]",
+  "model_file": "model.int8.onnx",
+  "inputs": [
+    "input_ids",
+    "attention_mask"
+  ],
+  "output": "logits",
+  "injection_logit_index": 1,
+  "prefix_token_ids": [
+    32000
+  ],
+  "additional_special_tokens": [
+    "[UNTRUSTED]"
+  ],
+  "backbone": "/Users/ssk/SSK/projects/promptpurify/models/l5e/_pretrained/latest",
+  "backbone_license": "OUR OWN \u2014 self-pretrained from random init on open/permissive corpora (see models/l5e/CORPUS_LICENSES.json)",
+  "pretrained": true,
+  "ours": true,
+  "n_params": 13723140,
+  "converged": true,
+  "final_train_acc": 0.0,
+  "final_val_auc": 0.0,
+  "final_val_f1": 0.9522556390977444,
+  "benign_base_rate": 0.8437866022783308
+}

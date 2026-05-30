@@ -1,0 +1,82 @@
+{
+  "name": "promptpurify",
+  "version": "0.0.1",
+  "description": "Structural prompt firewall for LLM apps. DOMPurify philosophy applied to prompt injection & jailbreak defense — deterministic, honest about its limits.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "browser": "./dist/promptpurify.browser.global.js",
+  "unpkg": "./dist/promptpurify.browser.global.js",
+  "jsdelivr": "./dist/promptpurify.browser.global.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./l5": {
+      "types": "./dist/l5/index.d.ts",
+      "import": "./dist/l5/index.js",
+      "require": "./dist/l5/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "MODEL_CARD.md",
+    "SECURITY.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/securelayer7/PROMPTPurify.git"
+  },
+  "homepage": "https://github.com/securelayer7/PROMPTPurify#readme",
+  "bugs": {
+    "url": "https://github.com/securelayer7/PROMPTPurify/issues"
+  },
+  "author": "SecureLayer7 <info@securelayer7.net> (https://securelayer7.net)",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepare": "tsup",
+    "bench": "node scripts/bench.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "sbom": "cyclonedx-npm --output-file dist/SBOM.cdx.json --output-format JSON"
+  },
+  "keywords": [
+    "prompt-injection",
+    "jailbreak",
+    "llm-security",
+    "prompt-sanitize",
+    "dompurify",
+    "ai-security",
+    "prompt-firewall"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "onnxruntime-node": ">=1.17.0"
+  },
+  "peerDependenciesMeta": {
+    "onnxruntime-node": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "^2.0.0",
+    "@types/node": "^22.19.19",
+    "onnxruntime-node": "^1.19.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

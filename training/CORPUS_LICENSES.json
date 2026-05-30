@@ -1,0 +1,55 @@
+{
+  "_about": "Public datasets used to evaluate promptpurify against the OSS baselines in docs/BENCHMARKS.md. We do not redistribute the raw data; this file is attribution + revision pinning only. Fetch each from its upstream URL.",
+  "benchmark_sources": [
+    {
+      "id": "deepset/prompt-injections",
+      "type": "hf_dataset",
+      "url": "https://huggingface.co/datasets/deepset/prompt-injections",
+      "license": "apache-2.0",
+      "role": "attack-side eval (recall)"
+    },
+    {
+      "id": "Lakera/gandalf_ignore_instructions",
+      "type": "hf_dataset",
+      "url": "https://huggingface.co/datasets/Lakera/gandalf_ignore_instructions",
+      "license": "MIT",
+      "role": "attack-side eval (recall)"
+    },
+    {
+      "id": "Lakera/gandalf_summarization",
+      "type": "hf_dataset",
+      "url": "https://huggingface.co/datasets/Lakera/gandalf_summarization",
+      "license": "MIT",
+      "role": "attack-side eval (recall)"
+    },
+    {
+      "id": "Wikipedia (english, long-paste sample)",
+      "type": "public",
+      "url": "https://en.wikipedia.org",
+      "license": "CC-BY-SA-4.0",
+      "role": "benign-side eval (false-positive rate)"
+    }
+  ],
+  "baseline_models_compared": [
+    {
+      "id": "protectai/deberta-v3-base-prompt-injection-v2",
+      "url": "https://huggingface.co/protectai/deberta-v3-base-prompt-injection-v2",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "deepset/deberta-v3-base-injection",
+      "url": "https://huggingface.co/deepset/deberta-v3-base-injection",
+      "license": "CC-BY-4.0"
+    },
+    {
+      "id": "fmops/distilbert-prompt-injection",
+      "url": "https://huggingface.co/fmops/distilbert-prompt-injection",
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "meta-llama/Llama-Prompt-Guard-2-86M",
+      "url": "https://huggingface.co/meta-llama/Llama-Prompt-Guard-2-86M",
+      "license": "Llama 4 Community License (not OSI-approved; review terms before commercial use)"
+    }
+  ]
+}
