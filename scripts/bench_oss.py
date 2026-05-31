@@ -52,6 +52,7 @@ class ModelSpec:
     hf_id: str
     injection_label: str
     default_threshold: float
+    sum_attack_labels: tuple = ()
     notes: str = ""
 
 
@@ -73,6 +74,21 @@ OSS_MODELS: list[ModelSpec] = [
         hf_id="fmops/distilbert-prompt-injection",
         injection_label="INJECTION",
         default_threshold=0.5,
+    ),
+    ModelSpec(
+        name="Meta Prompt-Guard",
+        hf_id="meta-llama/Prompt-Guard-86M",
+        injection_label="INJECTION",
+        default_threshold=0.5,
+        sum_attack_labels=("INJECTION", "JAILBREAK"),
+        notes="3-class; positive = P(INJECTION) + P(JAILBREAK)",
+    ),
+    ModelSpec(
+        name="Meta Prompt-Guard-2",
+        hf_id="meta-llama/Llama-Prompt-Guard-2-86M",
+        injection_label="LABEL_1",
+        default_threshold=0.5,
+        notes="LABEL_1 = injection class",
     ),
 ]
 
@@ -110,16 +126,22 @@ def score_with_pipeline(spec: ModelSpec, texts: list[str]) -> list[float]:
         batch = [t[:4000] for t in texts[i : i + BATCH]]
         outputs = clf(batch)
         for out in outputs:
-            inj = next(
-                (
-                    o["score"]
-                    for o in out
-                    if o["label"].upper() == spec.injection_label.upper()
-                ),
-                None,
-            )
-            if inj is None:
-                inj = max(o["score"] for o in out)
+            if spec.sum_attack_labels:
+                wanted = {l.upper() for l in spec.sum_attack_labels}
+                inj = sum(
+                    o["score"] for o in out if o["label"].upper() in wanted
+                )
+            else:
+                inj = next(
+                    (
+                        o["score"]
+                        for o in out
+                        if o["label"].upper() == spec.injection_label.upper()
+                    ),
+                    None,
+                )
+                if inj is None:
+                    inj = max(o["score"] for o in out)
             scores.append(float(inj))
     return scores
 

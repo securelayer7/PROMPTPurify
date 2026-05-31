@@ -46,10 +46,47 @@ Reproduce in two commands:
 
 ```bash
 node scripts/bench.mjs                  # promptpurify on the eval slice
-python3 scripts/bench_oss.py            # ProtectAI / deepset / fmops on the same slice
+python3 scripts/bench_oss.py            # OSS baselines on the same slice
 ```
 
 Full recipe: [REPRODUCE.md](REPRODUCE.md).
+
+## Results
+
+Same eval slice (`training/FROZEN_EVAL_SCORED.jsonl`, 791 attacks /
+132 benigns), same scoring code (`scripts/bench_oss.py`), each model
+at its published default threshold and at a cross-model neutral
+`0.5`.
+
+| Model | recall@default | FPR@default | recall@0.5 | FPR@0.5 |
+|---|---:|---:|---:|---:|
+| **promptpurify** | **83.94%** | **10.61%** | **87.10%** | **12.88%** |
+| ProtectAI v2 | 40.71% | 43.18% | 40.71% | 43.18% |
+| deepset | 97.22% | 59.85% | 97.22% | 59.85% |
+| fmops | 100.00% | 100.00% | 100.00% | 100.00% |
+| Meta Prompt-Guard | 67.00% | 88.64% | 67.00% | 88.64% |
+| Meta Prompt-Guard-2 | 12.77% | 1.52% | 12.77% | 1.52% |
+
+How to read this:
+
+- `promptpurify` ships at `0.95`; everything else ships at `0.5`.
+- Lower FPR than every other model except Prompt-Guard-2, which buys
+  its low FPR by recalling only 12.77% of attacks (≈1 in 8).
+- Higher recall than ProtectAI v2, Prompt-Guard, and Prompt-Guard-2
+  on this slice. `deepset` reaches higher recall but at ~6x the FPR
+  (60% of benigns blocked); for most production traffic that's worse,
+  not better.
+- `fmops` predicts the positive class for every input on this slice.
+  Treat the row as evidence the model is mis-calibrated for this
+  distribution, not as a real recall claim.
+- `Meta Prompt-Guard` is a 3-class model; we score it as
+  `P(INJECTION) + P(JAILBREAK)` (see `scripts/bench_oss.py`).
+
+The slice is deliberately hard — curated borderline cases, not a
+naturally-distributed sample. Numbers should be read as "relative
+behavior at the decision boundary", not as production recall on your
+traffic. Pick a threshold against your own data ([Operating
+points](#operating-points)).
 
 ## Operating points
 
