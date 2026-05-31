@@ -70,12 +70,6 @@ OSS_MODELS: list[ModelSpec] = [
         default_threshold=0.5,
     ),
     ModelSpec(
-        name="fmops",
-        hf_id="fmops/distilbert-prompt-injection",
-        injection_label="INJECTION",
-        default_threshold=0.5,
-    ),
-    ModelSpec(
         name="Meta Prompt-Guard",
         hf_id="meta-llama/Prompt-Guard-86M",
         injection_label="INJECTION",

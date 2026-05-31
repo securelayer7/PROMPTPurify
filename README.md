@@ -86,7 +86,7 @@ own products.
 - **From-scratch.** No teacher weights from any vendor classifier are
   redistributed.
 - **Benchmarked against public datasets** for direct comparison with OSS
-  baselines (ProtectAI v2, deepset, fmops, Meta Prompt-Guard-2). Held-out
+  baselines (ProtectAI v2, deepset, Meta Prompt-Guard, Meta Prompt-Guard-2). Held-out
   evaluation; false positives reported alongside recall.
 - **MIT-licensed weights.** Use in production, paid or free.
 

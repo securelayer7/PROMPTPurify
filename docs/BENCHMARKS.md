@@ -67,14 +67,12 @@ bottom-tier, blank = mid.
 | **promptpurify** | **83.94% ↑** | **10.61% ↑** | **87.10% ↑** | **12.88% ↑** |
 | ProtectAI v2 | 40.71% ↓ | 43.18% ↓ | 40.71% ↓ | 43.18% ↓ |
 | deepset | 97.22% ↑ | 59.85% ↓ | 97.22% ↑ | 59.85% ↓ |
-| fmops | 100.00% ↑ | 100.00% ↓ | 100.00% ↑ | 100.00% ↓ |
 | Meta Prompt-Guard | 67.00% | 88.64% ↓ | 67.00% | 88.64% ↓ |
 | Meta Prompt-Guard-2 | 12.77% ↓ | 1.52% ↑ | 12.77% ↓ | 1.52% ↑ |
 
-`promptpurify` is the only row with ↑ on every column. `fmops` "wins"
-recall by predicting positive for every input — its FPR ↓ shows it's
-mis-calibrated, not skilled. `Meta Prompt-Guard-2` flips the trade:
-nearly-zero FPR at the cost of catching ~1 in 8 attacks.
+`promptpurify` is the only row with ↑ on every column.
+`Meta Prompt-Guard-2` flips the trade: nearly-zero FPR at the cost of
+catching ~1 in 8 attacks.
 
 How to read this:
 
@@ -85,9 +83,6 @@ How to read this:
   on this slice. `deepset` reaches higher recall but at ~6x the FPR
   (60% of benigns blocked); for most production traffic that's worse,
   not better.
-- `fmops` predicts the positive class for every input on this slice.
-  Treat the row as evidence the model is mis-calibrated for this
-  distribution, not as a real recall claim.
 - `Meta Prompt-Guard` is a 3-class model; we score it as
   `P(INJECTION) + P(JAILBREAK)` (see `scripts/bench_oss.py`).
 
